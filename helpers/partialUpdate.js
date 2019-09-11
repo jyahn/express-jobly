@@ -42,3 +42,5 @@ function sqlForPartialUpdate(table, items, key, id) {
 }
 
 module.exports = sqlForPartialUpdate;
+
+
