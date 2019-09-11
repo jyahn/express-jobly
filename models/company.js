@@ -84,7 +84,7 @@ class Company {
     const result = await db.query(
       `${sqlObj.query}`, sqlObj.values);
     if (result.rows.length === 0) {
-      throw { message: `There is no compnay with handle of'${handle}`, status: 404 }
+      throw { message: `There is no company with handle of'${handle}`, status: 404 }
     }
     return result.rows[0];
   }
