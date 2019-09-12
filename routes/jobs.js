@@ -8,6 +8,7 @@ const jsonschema = require("jsonschema");
 // const companySchema = require("../schemas/companySchema"); --> replace with userschema
 
 const ExpressError = require("../expressError");
+const { authenticateJWT, ensureLoggedIn, ensureCorrectUser, ensureAdmin } = require("../middleware/auth");
 
 
 
@@ -34,7 +35,7 @@ router.post("/", async function (req, res, next) {
 
 /** GET / => {jobs: [job, ...]} */
 
-router.get("/", async function (req, res, next) {
+router.get("/", ensureLoggedIn, async function (req, res, next) {
   try {
     let searchQ = req.query.search;
     let minSalary = req.query.min_salary;
@@ -49,7 +50,7 @@ router.get("/", async function (req, res, next) {
 
 /** GET /:id => {jobs: job} */
 
-router.get("/:id", async function (req, res, next) {
+router.get("/:id", ensureLoggedIn, async function (req, res, next) {
   try {
     let id = req.params.id;
     const job = await Job.getById(id);

@@ -11,6 +11,25 @@ const { SECRET_KEY, BCRYPT_WORK_FACTOR } = require("../config");
 
 class User {
 
+    /** Authenticate: is this username/password valid? Returns boolean. */
+
+    static async authenticate(username, password) {
+        const result = await db.query(
+          `SELECT password 
+          FROM users 
+          WHERE username=$1`,
+          [username]
+        );
+        const user = result.rows[0];
+        if (user) {
+          if (await bcrypt.compare(password, user.password) === true) {
+            return true;
+          }
+          return false;
+        }
+    }
+
+
   /** Add new user */
 
   static async create({ username, password, first_name, last_name, email, photo_url, is_admin }) {
@@ -58,7 +77,7 @@ class User {
   }
 
 
-  static async getByHandle(username) {
+  static async getByUsername(username) {
     const result = await db.query(
       `SELECT username,
       first_name,

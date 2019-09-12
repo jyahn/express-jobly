@@ -7,12 +7,13 @@ const Company = require("../models/company");
 const jsonschema = require("jsonschema");
 const companySchema = require("../schemas/newCompanySchema.json");
 const ExpressError = require("../expressError");
+const { authenticateJWT, ensureLoggedIn, ensureCorrectUser, ensureAdmin } = require("../middleware/auth");
 
 
 
 /** POST / company data => {company: newCompany} */
 
-router.post("/", async function (req, res, next) {
+router.post("/", ensureAdmin, async function (req, res, next) {
   try {
     const result = jsonschema.validate(req.body, companySchema);
 
@@ -32,7 +33,7 @@ router.post("/", async function (req, res, next) {
 
 /** GET / => {companies: [company, ...]} */
 
-router.get("/", async function (req, res, next) {
+router.get("/", ensureLoggedIn, async function (req, res, next) {
   try {
     let searchQ = req.query.search;
     let minE = req.query.min_employees;
@@ -46,7 +47,7 @@ router.get("/", async function (req, res, next) {
 
 /** GET /:handle => {company: company} */
 
-router.get("/:handle", async function (req, res, next) {
+router.get("/:handle", ensureLoggedIn, async function (req, res, next) {
   try {
     let handle = req.params.handle;
     const company = await Company.getByHandle(handle);

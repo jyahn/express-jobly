@@ -7,6 +7,10 @@ const User = require("../models/user");
 const jsonschema = require("jsonschema");
 const companySchema = require("../schemas/newCompanySchema.json");
 const ExpressError = require("../expressError");
+const { SECRET_KEY } = require("../config");
+const jwt = require("jsonwebtoken");
+const { authenticateJWT, ensureLoggedIn, ensureCorrectUser } = require("../middleware/auth");
+
 
 
 
@@ -21,8 +25,12 @@ router.post("/", async function (req, res, next) {
     //   let error = new ExpressError(listOfErrors, 400);
     //   return next(error);
     // }
+    const { username, is_admin } = req.body;
     const user = await User.create(req.body);
-    return res.status(201).json(user);
+    if (user) {
+      let token = jwt.sign({ username }, SECRET_KEY)
+      return res.status(201).json({ token, is_admin });
+    }
   }
   catch (err) {
     return next(err);
@@ -60,7 +68,7 @@ router.get("/:username", async function (req, res, next) {
 
 
 
-router.patch("/:username", async function (req, res, next) {
+router.patch("/:username", ensureCorrectUser, async function (req, res, next) {
   try {
     let username = req.params.username;
     const user = await User.update(username, {
@@ -81,7 +89,7 @@ router.patch("/:username", async function (req, res, next) {
 })
 
 
-router.delete("/:username", async function (req, res, next) {
+router.delete("/:username", ensureCorrectUser, async function (req, res, next) {
   try {
     let username = (req.params.username);
     await User.delete(username);
