@@ -35,12 +35,12 @@ class User {
         email,
         photo_url,
         is_admin`,
-        [username, hashedPass, first_name, last_name, email, photo_url, is_admin]
-       );
+      [username, hashedPass, first_name, last_name, email, photo_url, is_admin]
+    );
     return result.rows[0];
   }
 
-  
+
   /** Get all basic info on all users:
    * [{username, first_name, last_name, email, photo_url, is_admin}, ...] */
 
@@ -58,7 +58,49 @@ class User {
   }
 
 
+  static async getByHandle(username) {
+    const result = await db.query(
+      `SELECT username,
+      first_name,
+      last_name,
+      email,
+      photo_url,
+      is_admin
+      from users WHERE username = $1`,
+      [username]);
 
+    return result.rows[0];
+
+  }
+
+
+  /** Update company with data provided */
+
+  static async update(username, data) {
+
+    let items = {}
+    for (var key in data) {
+      if (data[key] !== undefined) {
+        items[key] = data[key];
+      }
+    }
+    let sqlObj = sqlForPartialUpdate("users", items, "username", username)
+    const result = await db.query(
+      `${sqlObj.query}`, sqlObj.values);
+    if (result.rows.length === 0) {
+      throw { message: `There is no User with username of'${username}`, status: 404 }
+    }
+    return result.rows[0];
+  }
+
+
+  static async delete(username) {
+    const result = await db.query(
+      `DELETE FROM users 
+      WHERE username 
+      LIKE $1`,
+      [username]);
+  }
 
 
 }

@@ -46,4 +46,50 @@ router.get("/", async function (req, res, next) {
 });
 
 
+/** GET /:handle => {company: company} */
+
+router.get("/:username", async function (req, res, next) {
+  try {
+    let username = req.params.username;
+    const user = await User.getByHandle(username);
+    return res.json({ user });
+  } catch (err) {
+    return next(err);
+  }
+})
+
+
+
+router.patch("/:username", async function (req, res, next) {
+  try {
+    let username = req.params.username;
+    const user = await User.update(username, {
+      username: req.body.username,
+      password: req.body.password,
+      first_name: req.body.first_name,
+      last_name: req.body.last_name,
+      email: req.body.email,
+      photo_url: req.body.photo_url,
+      is_admin: req.body.is_admin
+
+    });
+    return res.json({ user });
+  } catch (err) {
+    return next(err);
+  }
+
+})
+
+
+router.delete("/:username", async function (req, res, next) {
+  try {
+    let username = (req.params.username);
+    await User.delete(username);
+    return res.json({ message: "User deleted" });
+  } catch (err) {
+    return next(err);
+  }
+})
+
+
 module.exports = router;
