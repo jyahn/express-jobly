@@ -65,13 +65,40 @@ class Company {
 
   static async getByHandle(handle) {
     const result = await db.query(
-      `SELECT * 
-      FROM companies 
-      WHERE handle 
-      LIKE $1`,
+      `SELECT j.id,
+      c.handle,
+      c.name,
+      c.num_employees,
+      c.description,
+      c.logo_url,
+      j.title,
+      j.salary,
+      j.equity,j.company_handle
+      FROM companies as c
+        JOIN jobs as j ON c.handle = j.company_handle
+      WHERE c.handle = $1`,
       [handle]);
-    return result.rows[0];
+    let resultRows = result.rows;
+    let arr = [];
+    for (let m of resultRows) {
+      let obj = {
+        id: m.id,
+        title: m.title,
+        salary: m.salary,
+        equity: m.equity,
+      }
+      arr.push(obj);
+    }
+    return {
+      handle: resultRows[0].company_handle,
+      name: resultRows[0].name,
+      num_employees: resultRows[0].num_employees,
+      description: resultRows[0].description,
+      logo_url: resultRows[0].logo_url,
+      jobs: arr
+    }
   }
+
 
   /** Update company with data provided */
 
