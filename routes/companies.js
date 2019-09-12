@@ -87,8 +87,7 @@ router.patch("/:handle", async function (req, res, next) {
 
 router.delete("/:handle", async function (req, res, next) {
   try {
-    let handle = req.params.handle;
-    // const company = await Company.delete(handle)==> don't need this line
+    let handle = (req.params.handle);
     await Company.delete(handle);
     return res.json({ message: "Company deleted" });
   } catch (err) {

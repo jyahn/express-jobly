@@ -13,9 +13,6 @@ const ExpressError = require("../expressError");
 
 /** POST / job data => {job: newJob} */
 
-
-//is this post route correct?
-
 router.post("/", async function (req, res, next) {
   try {
     // const result = jsonschema.validate(req.body, companySchema);
@@ -35,9 +32,64 @@ router.post("/", async function (req, res, next) {
   }
 });
 
+/** GET / => {jobs: [job, ...]} */
+
+router.get("/", async function (req, res, next) {
+  try {
+    let searchQ = req.query.search;
+    let minSalary = req.query.min_salary;
+    let minEquity = req.query.min_equity;
+    const jobs = await Job.get(searchQ, minSalary, minEquity);
+    return res.json({ jobs });
+  } catch (err) {
+    return next(err);
+  }
+})
 
 
+/** GET /:id => {jobs: job} */
 
+router.get("/:id", async function (req, res, next) {
+  try {
+    let id = req.params.id;
+    const job = await Job.getById(id);
+    return res.json({ job });
+  } catch (err) {
+    return next(err);
+  }
+})
+
+
+/** PATCH /:id  jobData => {job: updatedJob} */
+
+router.patch("/:id", async function (req, res, next) {
+  try {
+    let id = req.params.id;
+    const job = await Job.update(id, {
+      title: req.body.title,
+      salary: req.body.salary,
+      equity: req.body.equity,
+      company_handle: req.body.company_handle
+    });
+    return res.json({ job });
+  } catch (err) {
+    return next(err);
+  }
+
+})
+
+/** DELETE /:handle => { message: "Job deleted" } */
+
+router.delete("/:id", async function (req, res, next) {
+  try {
+    let id = req.params.id;
+    console.log(id);
+    await Job.delete(id);
+    return res.json({ message: "Job deleted" });
+  } catch (err) {
+    return next(err);
+  }
+})
 
 
 module.exports = router;

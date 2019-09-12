@@ -36,7 +36,6 @@ class Company {
 
     if (search !== undefined) {
       arr.push(`lower(name) LIKE '%' || $${count} || '%'`)
-      arr.push(`lower(name) LIKE '%' || $1 || '%'`)
       arrForSql.push(search);
       count++;
     }
@@ -52,12 +51,12 @@ class Company {
 
     if (arr.length > 0) {
       const result = await db.query(
-        `SELECT * from companies WHERE ${arr.join(" AND ")}`,
+        `SELECT handle, name from companies WHERE ${arr.join(" AND ")}`,
         arrForSql);
       return result.rows;
     } else {
       const result = await db.query(
-        `SELECT * from companies`);
+        `SELECT handle, name from companies`);
       return result.rows;
     }
   }
