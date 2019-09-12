@@ -16,7 +16,7 @@ const ExpressError = require("../expressError");
 
 //is this post route correct?
 
-router.post("/jobs", async function (req, res, next) {9
+router.post("/", async function (req, res, next) {
   try {
     // const result = jsonschema.validate(req.body, companySchema);
 
@@ -28,9 +28,16 @@ router.post("/jobs", async function (req, res, next) {9
 
     const job = await Job.create(req.body);
 
-    return res.status(201).json({job});
+    return res.status(201).json(job);
   }
   catch (err) {
     return next(err);
   }
 });
+
+
+
+
+
+
+module.exports = router;
