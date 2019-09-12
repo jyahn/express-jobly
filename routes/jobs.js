@@ -14,7 +14,7 @@ const { authenticateJWT, ensureLoggedIn, ensureCorrectUser, ensureAdmin } = requ
 
 /** POST / job data => {job: newJob} */
 
-router.post("/", async function (req, res, next) {
+router.post("/", ensureAdmin, async function (req, res, next) {
   try {
     // const result = jsonschema.validate(req.body, companySchema);
 
