@@ -12,7 +12,6 @@ class Company {
   /** Add new company */
 
   static async create({ handle, name, num_employees, description, logo_url }) {
-    console.log("THIS IS HANDLE-->", handle)
     const result = await db.query(
       `INSERT INTO companies (
               handle,
