@@ -9,11 +9,10 @@ const sqlForPartialUpdate = require("../helpers/partialUpdate");
 
 class Company {
 
-  /** ... company -- returns
-   *   {"companies": [{ "handle", "name", "num_employees", "description", "logo_url"}]}
-   */
+  /** Add new company */
 
   static async create({ handle, name, num_employees, description, logo_url }) {
+    console.log("THIS IS HANDLE-->", handle)
     const result = await db.query(
       `INSERT INTO companies (
               handle,
@@ -24,10 +23,10 @@ class Company {
             VALUES ($1, $2, $3, $4, $5)
             RETURNING handle, name, num_employees, description, logo_url`,
       [handle, name, num_employees, description, logo_url]);
-
     return result.rows[0];
-
   }
+
+  /** Search for company given handle, company name, min_employee, and/or max_employees */
 
   static async get(search, min_employees, max_employees) {
 
@@ -63,14 +62,19 @@ class Company {
     }
   }
 
+  /** Search for company by handle */
 
   static async getByHandle(handle) {
     const result = await db.query(
-      `SELECT * from companies WHERE handle LIKE $1`,
+      `SELECT * 
+      FROM companies 
+      WHERE handle 
+      LIKE $1`,
       [handle]);
     return result.rows[0];
   }
 
+  /** Update company with data provided */
 
   static async update(handle, data) {
 
@@ -89,10 +93,13 @@ class Company {
     return result.rows[0];
   }
 
+  /** Delete company by handle */
 
   static async delete(handle) {
     const result = await db.query(
-      `DELETE from companies WHERE handle LIKE $1`,
+      `DELETE FROM companies 
+      WHERE handle 
+      LIKE $1`,
       [handle]);
   }
 }

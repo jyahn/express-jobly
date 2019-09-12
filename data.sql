@@ -1,27 +1,27 @@
 CREATE TABLE companies (
-    handle text PRIMARY KEY,
-    name text NOT NULL UNIQUE,
-    num_employees int,
-    description text,
-    logo_url text
+    handle TEXT PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE,
+    num_employees INT,
+    description TEXT,
+    logo_url TEXT
 );
 
 CREATE TABLE jobs (
     id SERIAL PRIMARY KEY,
-    title text NOT NULL,
+    title TEXT NOT NULL,
     salary float NOT NULL,
     equity float NOT NULL,
-    company_handle text REFERENCES companies ON DELETE CASCADE,
+    company_handle TEXT REFERENCES companies ON DELETE CASCADE,
     date_posted timestamp with time zone NOT NULL
     CONSTRAINT jobs_equity_check CHECK ((equity < 1))
 );
 
 CREATE TABLE users (
-    username text PRIMARY KEY,
-    password text NOT NULL,
-    first_name text NOT NULL,
-    last_name text NOT NULL,
-    email text NOT NULL UNIQUE,
-    photo_url text,
-    is_admin boolean DEFAULT 'false' NOT NULL
+    username TEXT PRIMARY KEY,
+    password TEXT NOT NULL,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    photo_url TEXT,
+    is_admin BOOLEAN DEFAULT 'false' NOT NULL
 );
