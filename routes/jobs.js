@@ -9,7 +9,7 @@ const newJobSchema = require("../schemas/newJobSchema.json");
 const patchJobSchema = require("../schemas/patchJobSchema.json");
 const ExpressError = require("../expressError");
 const { authenticateJWT, ensureLoggedIn, ensureCorrectUser, ensureAdmin } = require("../middleware/auth");
-
+router.use(ensureLoggedIn);
 
 
 /** POST / job data => {job: newJob} */
@@ -35,7 +35,7 @@ router.post("/", ensureAdmin, async function (req, res, next) {
 
 /** GET / => {jobs: [job, ...]} */
 
-router.get("/", ensureLoggedIn, async function (req, res, next) {
+router.get("/", async function (req, res, next) {
   try {
     let searchQ = req.query.search;
     let minSalary = req.query.min_salary;
@@ -50,7 +50,7 @@ router.get("/", ensureLoggedIn, async function (req, res, next) {
 
 /** GET /:id => {jobs: job} */
 
-router.get("/:id", ensureLoggedIn, async function (req, res, next) {
+router.get("/:id", async function (req, res, next) {
   try {
     let id = req.params.id;
     const job = await Job.getById(id);
@@ -73,12 +73,7 @@ router.patch("/:id", ensureAdmin, async function (req, res, next) {
       return next(error);
     }
     let id = req.params.id;
-    const job = await Job.update(id, {
-      title: req.body.title,
-      salary: req.body.salary,
-      equity: req.body.equity,
-      company_handle: req.body.company_handle
-    });
+    const job = await Job.update(id, req.body);
     return res.json({ job });
   } catch (err) {
     return next(err);
@@ -91,7 +86,6 @@ router.patch("/:id", ensureAdmin, async function (req, res, next) {
 router.delete("/:id", ensureAdmin, async function (req, res, next) {
   try {
     let id = req.params.id;
-    console.log(id);
     await Job.delete(id);
     return res.json({ message: "Job deleted" });
   } catch (err) {

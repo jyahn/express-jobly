@@ -98,13 +98,7 @@ class Job {
 
   static async update(id, data) {
 
-    let items = {}
-    for (var key in data) {
-      if (data[key] !== undefined) {
-        items[key] = data[key];
-      }
-    }
-    let sqlObj = sqlForPartialUpdate("jobs", items, "id", id)
+    let sqlObj = sqlForPartialUpdate("jobs", data, "id", id)
     const result = await db.query(
       `${sqlObj.query}`, sqlObj.values);
     if (result.rows.length === 0) {

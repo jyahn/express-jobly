@@ -63,6 +63,8 @@ class Company {
   /** Search for company by handle */
 
   static async getByHandle(handle) {
+    //consider making two seperate queries to make it cleaner/readable.
+    //this is ok because our db is not very large
     const result = await db.query(
       `SELECT j.id,
       c.handle,
@@ -102,14 +104,7 @@ class Company {
   /** Update company with data provided */
 
   static async update(handle, data) {
-
-    let items = {}
-    for (var key in data) {
-      if (data[key] !== undefined) {
-        items[key] = data[key];
-      }
-    }
-    let sqlObj = sqlForPartialUpdate("companies", items, "handle", handle)
+    let sqlObj = sqlForPartialUpdate("companies", data, "handle", handle)
     const result = await db.query(
       `${sqlObj.query}`, sqlObj.values);
     if (result.rows.length === 0) {

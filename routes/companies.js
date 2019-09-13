@@ -9,7 +9,7 @@ const newCompanySchema = require("../schemas/newCompanySchema.json");
 const patchCompanySchema = require("../schemas/patchCompanySchema.json");
 const ExpressError = require("../expressError");
 const { authenticateJWT, ensureLoggedIn, ensureCorrectUser, ensureAdmin } = require("../middleware/auth");
-
+router.use(ensureLoggedIn);
 
 
 /** POST / company data => {company: newCompany} */
@@ -34,7 +34,7 @@ router.post("/", ensureAdmin, async function (req, res, next) {
 
 /** GET / => {companies: [company, ...]} */
 
-router.get("/", ensureLoggedIn, async function (req, res, next) {
+router.get("/", async function (req, res, next) {
   try {
     let searchQ = req.query.search;
     let minE = req.query.min_employees;
@@ -48,7 +48,7 @@ router.get("/", ensureLoggedIn, async function (req, res, next) {
 
 /** GET /:handle => {company: company} */
 
-router.get("/:handle", ensureLoggedIn, async function (req, res, next) {
+router.get("/:handle", async function (req, res, next) {
   try {
     let handle = req.params.handle;
     const company = await Company.getByHandle(handle);
@@ -70,13 +70,7 @@ router.patch("/:handle", ensureAdmin, async function (req, res, next) {
       return next(error);
     }
     let handle = req.params.handle;
-    const company = await Company.update(handle, {
-      handle: req.body.handle,
-      name: req.body.name,
-      num_employees: req.body.num_employees,
-      description: req.body.description,
-      logo_url: req.body.logo_url
-    });
+    const company = await Company.update(handle, req.body);
     return res.json({ company });
   } catch (err) {
     return next(err);

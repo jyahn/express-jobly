@@ -68,7 +68,6 @@ router.get("/:username", async function (req, res, next) {
 })
 
 
-
 router.patch("/:username", ensureCorrectUser, async function (req, res, next) {
   try {
     const result = jsonschema.validate(req.body, patchUserSchema);
@@ -79,23 +78,13 @@ router.patch("/:username", ensureCorrectUser, async function (req, res, next) {
       return next(error);
     }
     let username = req.params.username;
-    const user = await User.update(username, {
-      username: req.body.username,
-      password: req.body.password,
-      first_name: req.body.first_name,
-      last_name: req.body.last_name,
-      email: req.body.email,
-      photo_url: req.body.photo_url,
-      is_admin: req.body.is_admin
-
-    });
+    const user = await User.update(username, req.body);
     return res.json({ user });
   } catch (err) {
     return next(err);
   }
 
 })
-
 
 router.delete("/:username", ensureCorrectUser, async function (req, res, next) {
   try {

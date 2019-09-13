@@ -11,23 +11,23 @@ const { SECRET_KEY, BCRYPT_WORK_FACTOR } = require("../config");
 
 class User {
 
-    /** Authenticate: is this username/password valid? Returns boolean. */
+  /** Authenticate: is this username/password valid? Returns boolean. */
 
-    static async authenticate(username, password) {
-        const result = await db.query(
-          `SELECT password 
+  static async authenticate(username, password) {
+    const result = await db.query(
+      `SELECT password 
           FROM users 
           WHERE username=$1`,
-          [username]
-        );
-        const user = result.rows[0];
-        if (user) {
-          if (await bcrypt.compare(password, user.password) === true) {
-            return true;
-          }
-          return false;
-        }
+      [username]
+    );
+    const user = result.rows[0];
+    if (user) {
+      if (await bcrypt.compare(password, user.password) === true) {
+        return true;
+      }
+      return false;
     }
+  }
 
 
   /** Add new user */
@@ -96,14 +96,7 @@ class User {
   /** Update company with data provided */
 
   static async update(username, data) {
-
-    let items = {}
-    for (var key in data) {
-      if (data[key] !== undefined) {
-        items[key] = data[key];
-      }
-    }
-    let sqlObj = sqlForPartialUpdate("users", items, "username", username)
+    let sqlObj = sqlForPartialUpdate("users", data, "username", username)
     const result = await db.query(
       `${sqlObj.query}`, sqlObj.values);
     if (result.rows.length === 0) {
@@ -120,7 +113,6 @@ class User {
       LIKE $1`,
       [username]);
   }
-
 
 }
 

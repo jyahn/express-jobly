@@ -21,8 +21,8 @@ const { SECRET_KEY, BCRYPT_WORK_FACTOR } = require("../config");
 router.post("/login", async function (req, res, next) {
   try {
     const { username, password } = req.body;
-    const result = await User.authenticate(username, password);
-    if (result) {
+    const isAuthenticated = await User.authenticate(username, password);
+    if (isAuthenticated) {
       let user = await User.getByUsername(username);
       let userAdminVal = user.is_admin
       let token = jwt.sign({ username }, SECRET_KEY);
