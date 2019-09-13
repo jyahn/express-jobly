@@ -5,7 +5,8 @@ const router = new Router();
 
 const User = require("../models/user");
 const jsonschema = require("jsonschema");
-const companySchema = require("../schemas/newCompanySchema.json");
+const newUserSchema = require("../schemas/newUserSchema.json");
+const patchUserSchema = require("../schemas/patchUserSchema.json");
 const ExpressError = require("../expressError");
 const { SECRET_KEY } = require("../config");
 const jwt = require("jsonwebtoken");
@@ -18,13 +19,13 @@ const { authenticateJWT, ensureLoggedIn, ensureCorrectUser } = require("../middl
 
 router.post("/", async function (req, res, next) {
   try {
-    // const result = jsonschema.validate(req.body, companySchema);
+    const result = jsonschema.validate(req.body, newUserSchema);
 
-    // if (!result.valid) {
-    //   let listOfErrors = result.errors.map(error => error.stack);
-    //   let error = new ExpressError(listOfErrors, 400);
-    //   return next(error);
-    // }
+    if (!result.valid) {
+      let listOfErrors = result.errors.map(error => error.stack);
+      let error = new ExpressError(listOfErrors, 400);
+      return next(error);
+    }
     const { username, is_admin } = req.body;
     const user = await User.create(req.body);
     if (user) {
@@ -70,6 +71,13 @@ router.get("/:username", async function (req, res, next) {
 
 router.patch("/:username", ensureCorrectUser, async function (req, res, next) {
   try {
+    const result = jsonschema.validate(req.body, patchUserSchema);
+
+    if (!result.valid) {
+      let listOfErrors = result.errors.map(error => error.stack);
+      let error = new ExpressError(listOfErrors, 400);
+      return next(error);
+    }
     let username = req.params.username;
     const user = await User.update(username, {
       username: req.body.username,

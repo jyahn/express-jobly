@@ -5,8 +5,8 @@ const router = new Router();
 
 const Job = require("../models/job");
 const jsonschema = require("jsonschema");
-// const companySchema = require("../schemas/companySchema"); --> replace with userschema
-
+const newJobSchema = require("../schemas/newJobSchema.json");
+const patchJobSchema = require("../schemas/patchJobSchema.json");
 const ExpressError = require("../expressError");
 const { authenticateJWT, ensureLoggedIn, ensureCorrectUser, ensureAdmin } = require("../middleware/auth");
 
@@ -16,13 +16,13 @@ const { authenticateJWT, ensureLoggedIn, ensureCorrectUser, ensureAdmin } = requ
 
 router.post("/", ensureAdmin, async function (req, res, next) {
   try {
-    // const result = jsonschema.validate(req.body, companySchema);
+    const result = jsonschema.validate(req.body, newJobSchema);
 
-    // if (!result.valid) {
-    //   let listOfErrors = result.errors.map(error => error.stack);
-    //   let error = new ExpressError(listOfErrors, 400);
-    //   return next(error);
-    // }
+    if (!result.valid) {
+      let listOfErrors = result.errors.map(error => error.stack);
+      let error = new ExpressError(listOfErrors, 400);
+      return next(error);
+    }
 
     const job = await Job.create(req.body);
 
@@ -63,8 +63,15 @@ router.get("/:id", ensureLoggedIn, async function (req, res, next) {
 
 /** PATCH /:id  jobData => {job: updatedJob} */
 
-router.patch("/:id", async function (req, res, next) {
+router.patch("/:id", ensureAdmin, async function (req, res, next) {
   try {
+    const result = jsonschema.validate(req.body, patchJobSchema);
+
+    if (!result.valid) {
+      let listOfErrors = result.errors.map(error => error.stack);
+      let error = new ExpressError(listOfErrors, 400);
+      return next(error);
+    }
     let id = req.params.id;
     const job = await Job.update(id, {
       title: req.body.title,
@@ -81,7 +88,7 @@ router.patch("/:id", async function (req, res, next) {
 
 /** DELETE /:handle => { message: "Job deleted" } */
 
-router.delete("/:id", async function (req, res, next) {
+router.delete("/:id", ensureAdmin, async function (req, res, next) {
   try {
     let id = req.params.id;
     console.log(id);
